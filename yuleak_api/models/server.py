@@ -4,6 +4,12 @@ import dateutil.parser
 from yuleak_api.client import YuleakClient
 from yuleak_api.logs import logger
 
+# Python2 support
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
+
 
 class Geo:
     def __init__(self):
