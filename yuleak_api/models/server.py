@@ -1,3 +1,4 @@
+import requests
 import dateutil.parser
 
 from yuleak_api.client import YuleakClient
@@ -29,6 +30,7 @@ class Domain:
         self.in_src = False
         self.tags = []
         self.risk = 0
+        self.screenshot= None
 
     @classmethod
     def from_json(cls, domain_json, parent=None):
@@ -39,11 +41,31 @@ class Domain:
         domain.in_src = domain_json.get('in_src', False)
         domain.tags = domain_json.get('tags', [])
         domain.risk = domain_json.get('risk', 0)
+        screenshot_url = domain_json.get('screenshot', None)
+        if screenshot_url is not None:
+            domain.screenshot = ScreenShot(screenshot_url)
         return domain
 
     def __repr__(self):
         return '<Domain {0}> {1}'.format(self.id, self.value)
 
+
+class ScreenShot:
+    def __init__(self, url):
+        self.url = url
+
+    def download(self, filepath, timeout=30):
+        try:
+            req = requests.get(self.url, timeout=timeout)
+            with open(filepath, 'wb') as fc:
+                fc.write(req.content)
+            return True
+        except requests.exceptions.RequestException as e:
+            logger.error(e)
+            return False
+        except FileNotFoundError as e:
+            logger.error(e)
+            return False
 
 class Service:
     def __init__(self):

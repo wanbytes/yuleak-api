@@ -81,6 +81,10 @@ for dashboard in dashboards:
     # Display details (similar to details view in WebUI)
     for server in dashboard.details():
         print(server.geo.country_name)
+        # Download screenshots
+        for domain in server.domains:
+            if domain.screenshot is not None:
+                domain.screenshot.download('/tmp/{0}.png'.format(domain.value))
     dashboard.delete()
 ```
 
@@ -127,6 +131,8 @@ if YuleakClient.credits() >= new_servers > 0:
 ```
 
 ## Changelog
+### v1.4.0
+ * preview screenshot can now be recovered using server.domain.screenshot.download()
 ### v1.3.4
  * requests timeout can now be set with YuleakClient.REQUESTS_TIMEOUT
  * requests retry on error can now be set with YuleakClient.REQUESTS_RETRY

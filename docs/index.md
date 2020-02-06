@@ -81,6 +81,10 @@ for dashboard in dashboards:
     # Display details (similar to details view in WebUI)
     for server in dashboard.details():
         print(server.geo.country_name)
+        # Download screenshots
+        for domain in server.domains:
+            if domain.screenshot is not None:
+                domain.screenshot.download('/tmp/{0}.png'.format(domain.value))
     dashboard.delete()
 ```
 
@@ -115,7 +119,7 @@ for f in dashboard.filters():
     f.delete()
 ```
 
-### [Search](https://app.yuleak.com/apidoc#search)
+### [Search](https://app.yuleak.com/apidoc#post-search)
 ```python
 YuleakClient.search('yuleak.com')
 dashboard = YuleakClient.dashboards()[-1]
@@ -127,6 +131,8 @@ if YuleakClient.credits() >= new_servers > 0:
 ```
 
 ## Changelog
+### v1.4.0
+ * preview screenshot can now be recovered using server.domain.screenshot.download()
 ### v1.3.4
  * requests timeout can now be set with YuleakClient.REQUESTS_TIMEOUT
  * requests retry on error can now be set with YuleakClient.REQUESTS_RETRY
@@ -144,7 +150,3 @@ if YuleakClient.credits() >= new_servers > 0:
  * POST dashboard/{id}/searchall added
 ### v1.1.0
  * Change to match the Yuleak API path modifications
-
-## Contents
-
-* [Generated Code Documentation](code.md)

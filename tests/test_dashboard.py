@@ -24,6 +24,13 @@ def test_views():
         # Display details (similar to details view in WebUI)
         details = dashboard.details()
         assert len(details) > 0
+        for server in details:
+            assert server.geo.country_name is not None
+            for domain in server.domains:
+                if domain.screenshot is not None:
+                    assert domain.screenshot.url is not None
+                    assert domain.screenshot.url != ''
+                    assert domain.screenshot.download('/tmp/{0}.png'.format(domain.value))
         assert details[0].geo.country_name is not None
 
 
