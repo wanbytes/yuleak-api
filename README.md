@@ -131,6 +131,10 @@ if YuleakClient.credits() >= new_servers > 0:
 ```
 
 ## Changelog
+### v1.5.0
+ * GET dashboard/{id}/statsdns added
+ * GET dashboard/{id}/dns added
+ * you can now add custom headers in YuleakClient requests
 ### v1.4.0
  * preview screenshot can now be recovered using server.domain.screenshot.download()
 ### v1.3.4
