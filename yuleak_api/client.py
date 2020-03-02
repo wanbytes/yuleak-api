@@ -67,45 +67,48 @@ class YuleakClient(object):
         return cls.post_request('search', data={'value': search})
 
     @classmethod
-    def get_request(cls, endpoint):
+    def get_request(cls, endpoint, headers=None):
         """Make a GET request to the API.
 
         Args:
             endpoint (str): Name of the endpoint to query.
+            headers (dict): Custom headers to add
 
         Returns:
             a list of items
         """
-        return cls._do_request('GET', endpoint)
+        return cls._do_request('GET', endpoint, headers=headers)
 
     @classmethod
-    def post_request(cls, endpoint, data=None):
+    def post_request(cls, endpoint, data=None, headers=None):
         """Make a POST request to the API.
 
         Args:
             endpoint (str): Name of the endpoint to query.
             data (dict): Data to send
+            headers (dict): Custom headers to add
 
         Returns:
             (bool) True if the request performed well
         """
-        return cls._do_request('POST', endpoint, data=data)
+        return cls._do_request('POST', endpoint, data=data, headers=headers)
 
     @classmethod
-    def delete_request(cls, endpoint, params=None):
+    def delete_request(cls, endpoint, params=None, headers=None):
         """Make a DELETE request to the API.
 
         Args:
             endpoint (str): Name of the endpoint to query.
             params (dict): GET data to send
+            headers (dict): Custom headers to add
 
         Returns:
             (bool) True if the request performed well
         """
-        return cls._do_request('DELETE', endpoint, params=params)
+        return cls._do_request('DELETE', endpoint, params=params, headers=headers)
 
     @classmethod
-    def _do_request(cls, method, endpoint, retry=None, params=None, data=None):
+    def _do_request(cls, method, endpoint, retry=None, params=None, data=None, headers=None):
         try:
             if retry is None:
                 retry = YuleakClient.REQUESTS_RETRY
@@ -113,9 +116,12 @@ class YuleakClient(object):
                 params = {}
             if data is None:
                 data = {}
+            full_headers = {'X-Api-Key': cls.APIKEY}
+            if headers is not None:
+                full_headers.update(headers)
             req = requests.request(method,
                                    cls.BASE_URL + endpoint,
-                                   headers={'X-Api-Key': cls.APIKEY},
+                                   headers=full_headers,
                                    data=data,
                                    params=params,
                                    timeout=YuleakClient.REQUESTS_TIMEOUT)
@@ -131,7 +137,7 @@ class YuleakClient(object):
             if pagination is not None:
                 if (pagination.get('total') / pagination.get('max')) > pagination.get('page'):
                     params['page'] = pagination.get('page') + 1
-                    result += cls._do_request(method, endpoint, params=params, data=data)
+                    result += cls._do_request(method, endpoint, params=params, data=data, headers=headers)
             # Return
             if method == 'GET':
                 return result

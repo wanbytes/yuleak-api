@@ -6,6 +6,7 @@ from .event import Event
 from .server import Server
 from .resource import Resource
 from .filter import Filter
+from .dnsentry import DNSEntry
 
 
 class Dashboard:
@@ -16,6 +17,7 @@ class Dashboard:
                   'alert': 0,
                   'hacked': 0,
                   'vulnerability': 0,
+                  'leakcreds': 0,
                   'leak': 0,
                   'filedisclosure': 0,
                   'weakservice': 0,
@@ -27,9 +29,11 @@ class Dashboard:
                   'ssl': 0,
                   'paste': 0,
                   'warez': 0,
-                  'github': 0,
+                  'repository': 0,
                   'social_networks': 0,
-                  'ids': 0}
+                  'ids': 0,
+                  'domain_expiration': 0,
+                  'cryptowallet': 0}
 
     def __init__(self, id_, name):
         self.id = id_
@@ -50,6 +54,19 @@ class Dashboard:
         for k, v in data[0].items():
             stats[k] = v
         return stats
+
+    def statsdns(self):
+        """Get the current dashboard DNS (Typosquatting) stats (similare to dns view in WebUI).
+
+        See https://app.yuleak.com/apidoc#get-statsdns for endpoint details.
+
+        Returns:
+            dict containing statistics
+        """
+        data = YuleakClient.get_request('dashboard/{0}/statsdns'.format(self.id))
+        if len(data) == 0:
+            return []
+        return data[0]
 
     def map(self):
         """Get the current dashboard map markers (similar to map widget in WebUI).
@@ -112,6 +129,19 @@ class Dashboard:
         results = []
         for d in YuleakClient.get_request('dashboard/{0}/details'.format(self.id)):
             results.append(Server.from_json(d, self))
+        return results
+
+    def dns(self):
+        """Get the current dashboard typosquatting dns entries (similar to dns view in WebUI).
+
+        See https://app.yuleak.com/apidoc#get-dns for endpoint details.
+
+        Returns:
+            list of DNSEntry items
+        """
+        results = []
+        for d in YuleakClient.get_request('dashboard/{0}/dns'.format(self.id)):
+            results.append(DNSEntry.from_json(d))
         return results
 
     def resources(self):
